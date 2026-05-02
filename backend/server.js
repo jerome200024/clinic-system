@@ -1,5 +1,8 @@
 require('dotenv').config();
 
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('DATABASE_URL exists:', !!process.env.DATABASE_URL);
+
 const app = require('./src/app');
 const pool = require('./src/config/db');
 const { startReminderCron } = require('./src/utils/cron');
