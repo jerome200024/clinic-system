@@ -1,0 +1,16 @@
+{
+  "name": "clinic-system",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+  "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\""
+  
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
