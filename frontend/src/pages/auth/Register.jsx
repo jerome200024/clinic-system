@@ -1,12 +1,10 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { register } from "../../api/authApi";
-import useAuthStore from "../../store/authStore";
 import toast from "react-hot-toast";
 
 const Register = () => {
   const navigate = useNavigate();
-  const setAuth = useAuthStore((s) => s.setAuth);
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -20,13 +18,9 @@ const Register = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const { data } = await register(form);
-      setAuth(data.data.user, data.data.accessToken);
-      toast.success("Account created successfully!");
-      const role = data.data.user.role;
-      if (role === "patient") navigate("/patient");
-      else if (role === "doctor") navigate("/doctor");
-      else if (role === "admin") navigate("/admin");
+      await register(form);
+      toast.success("Account created successfully! Please login.");
+      navigate("/login");
     } catch (err) {
       toast.error(err.response?.data?.message || "Registration failed");
     } finally {
