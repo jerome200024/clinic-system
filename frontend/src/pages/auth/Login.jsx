@@ -7,11 +7,32 @@ import toast from "react-hot-toast";
 const Login = () => {
   const navigate = useNavigate();
   const setAuth = useAuthStore((s) => s.setAuth);
-  const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
+
+  const validate = () => {
+    const newErrors = {};
+    if (!form.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      newErrors.email = "Please enter a valid email";
+    }
+    if (!form.password) {
+      newErrors.password = "Password is required";
+    }
+    return newErrors;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+    setErrors({});
     setLoading(true);
     try {
       const { data } = await login(form);
@@ -25,6 +46,12 @@ const Login = () => {
       toast.error(err.response?.data?.message || "Login failed");
     } finally {
       setLoading(false);
+    }
+  };
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+    if (errors[e.target.name]) {
+      setErrors({ ...errors, [e.target.name]: "" });
     }
   };
 

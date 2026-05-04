@@ -5,6 +5,8 @@ import toast from "react-hot-toast";
 
 const Register = () => {
   const navigate = useNavigate();
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -12,11 +14,33 @@ const Register = () => {
     role: "patient",
     phone: "",
   });
-  const [loading, setLoading] = useState(false);
+
+  const validate = () => {
+    const newErrors = {};
+    if (!form.name || form.name.length < 2) {
+      newErrors.name = "Name must be at least 2 characters";
+    }
+    if (!form.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      newErrors.email = "Please enter a valid email";
+    }
+    if (form.phone && !/^09\d{9}$/.test(form.phone)) {
+  newErrors.phone = "Phone must start with 09 and be exactly 11 digits";
+}
+    if (!form.password || form.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
+    }
+    return newErrors;
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  e.preventDefault();
+  const validationErrors = validate();
+  if (Object.keys(validationErrors).length > 0) {
+    setErrors(validationErrors);
+    return;
+  }
+  setErrors({});
+  setLoading(true);
     try {
       await register(form);
       toast.success("Account created successfully! Please login.");
@@ -25,6 +49,13 @@ const Register = () => {
       toast.error(err.response?.data?.message || "Registration failed");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+    if (errors[e.target.name]) {
+      setErrors({ ...errors, [e.target.name]: "" });
     }
   };
 
