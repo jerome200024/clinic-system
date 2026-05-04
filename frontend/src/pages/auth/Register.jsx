@@ -107,9 +107,9 @@ const Register = () => {
               type="text"
               value={form.phone}
               onChange={(e) => {
-                if (e.target.value.length <= 11) {
-                  handleChange(e);
-                }
+                const value = e.target.value.replace(/\D/g, "").slice(0, 11);
+                setForm({ ...form, phone: value });
+                if (errors.phone) setErrors({ ...errors, phone: "" });
               }}
               className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="09XXXXXXXXX"
