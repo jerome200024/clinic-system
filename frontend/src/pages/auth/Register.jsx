@@ -23,9 +23,11 @@ const Register = () => {
     if (!form.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
       newErrors.email = "Please enter a valid email";
     }
-    if (form.phone && !/^09\d{9}$/.test(form.phone)) {
-  newErrors.phone = "Phone must start with 09 and be exactly 11 digits";
-}
+    if (!form.phone) {
+      newErrors.phone = "Phone number is required";
+    } else if (!/^09\d{9}$/.test(form.phone)) {
+      newErrors.phone = "Phone must start with 09 and be exactly 11 digits";
+    }
     if (!form.password || form.password.length < 6) {
       newErrors.password = "Password must be at least 6 characters";
     }
@@ -33,18 +35,18 @@ const Register = () => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  const validationErrors = validate();
-  if (Object.keys(validationErrors).length > 0) {
-    setErrors(validationErrors);
-    return;
-  }
-  setErrors({});
-  setLoading(true);
+    e.preventDefault();
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+    setErrors({});
+    setLoading(true);
     try {
       await register(form);
       toast.success("Account created successfully! Please login.");
-      navigate("/login");
+      navigate("/register");
     } catch (err) {
       toast.error(err.response?.data?.message || "Registration failed");
     } finally {
