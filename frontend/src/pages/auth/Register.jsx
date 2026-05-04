@@ -106,9 +106,14 @@ const Register = () => {
             <input
               type="text"
               value={form.phone}
-              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              onChange={(e) => {
+                if (e.target.value.length <= 11) {
+                  handleChange(e);
+                }
+              }}
               className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="09XXXXXXXXX"
+              maxLength={11}
             />
           </div>
 
