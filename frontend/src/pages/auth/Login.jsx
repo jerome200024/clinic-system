@@ -55,6 +55,9 @@ const Login = () => {
     if (errors[e.target.name]) {
       setErrors({ ...errors, [e.target.name]: "" });
     }
+    if (errors.general) {
+      setErrors({ ...errors, general: "" });
+    }
   };
 
   return (
