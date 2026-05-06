@@ -43,7 +43,9 @@ const Login = () => {
       else if (role === "doctor") navigate("/doctor");
       else if (role === "admin") navigate("/admin");
     } catch (err) {
-      toast.error(err.response?.data?.message || "Login failed");
+      setErrors({
+        general: "Invalid email or password. Please try again.",
+      });
     } finally {
       setLoading(false);
     }
@@ -65,18 +67,29 @@ const Login = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {errors.general && (
+            <div className="bg-red-50 border border-red-300 text-red-600 text-sm px-4 py-3 rounded-lg text-center">
+              {errors.general}
+            </div>
+          )}
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Email
             </label>
             <input
-              type="email"
+              type="text"
+              name="email"
               value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={handleChange}
+              className={`w-full border rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                errors.email ? "border-red-400 bg-red-50" : "border-gray-300"
+              }`}
               placeholder="Enter your email"
-              required
             />
+            {errors.email && (
+              <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+            )}
           </div>
 
           <div>
@@ -85,12 +98,17 @@ const Login = () => {
             </label>
             <input
               type="password"
+              name="password"
               value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={handleChange}
+              className={`w-full border rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                errors.password ? "border-red-400 bg-red-50" : "border-gray-300"
+              }`}
               placeholder="Enter your password"
-              required
             />
+            {errors.password && (
+              <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+            )}
           </div>
 
           <button
