@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { login } from "../../api/authApi";
 import useAuthStore from "../../store/authStore";
@@ -9,53 +9,59 @@ const Login = () => {
   const setAuth = useAuthStore((s) => s.setAuth);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-  });
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
 
   const validate = () => {
     const newErrors = {};
-    if (!form.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+    const email = emailRef.current?.value?.trim() || "";
+    const password = passwordRef.current?.value || "";
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       newErrors.email = "Please enter a valid email";
     }
-    if (!form.password) {
+    if (!password) {
       newErrors.password = "Password is required";
     }
     return newErrors;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const validationErrors = validate();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
-    setErrors({});
-    setLoading(true);
-    try {
-      const { data } = await login(form);
-      setAuth(data.data.user, data.data.accessToken);
-      toast.success("Welcome back!");
-      const role = data.data.user.role;
-      if (role === "patient") navigate("/patient");
-      else if (role === "doctor") navigate("/doctor");
-      else if (role === "admin") navigate("/admin");
-    } catch (err) {
-      setErrors({
-        general: "Invalid email or password. Please try again.",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const handleSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
+      const validationErrors = validate();
+      if (Object.keys(validationErrors).length > 0) {
+        setErrors(validationErrors);
+        return;
+      }
+      setErrors({});
+      setLoading(true);
+      const formData = {
+        email: emailRef.current?.value?.trim(),
+        password: passwordRef.current?.value,
+      };
+      try {
+        const { data } = await login(formData);
+        setAuth(data.data.user, data.data.accessToken);
+        toast.success("Welcome back!");
+        const role = data.data.user.role;
+        if (role === "patient") navigate("/patient");
+        else if (role === "doctor") navigate("/doctor");
+        else if (role === "admin") navigate("/admin");
+      } catch (err) {
+        setErrors({ general: "Invalid email or password. Please try again." });
+        // Keep input values so user can correct them; focus password for quick retry
+        if (passwordRef.current?.focus) passwordRef.current.focus();
+      } finally {
+        setLoading(false);
+      }
+    },
+    [navigate, setAuth]
+  );
+  const handleChange = useCallback((e) => {
     if (errors[e.target.name]) {
-      setErrors({ ...errors, [e.target.name]: "" });
+      setErrors((prev) => ({ ...prev, [e.target.name]: "" }));
     }
-  };
+  }, [errors]);
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -67,11 +73,22 @@ const Login = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {errors.general && (
-            <div className="bg-red-50 border border-red-300 text-red-600 text-sm px-4 py-3 rounded-lg text-center">
-              {errors.general}
+          <div
+            aria-live="polite"
+            className="mb-2 min-h-[40px] flex items-center justify-center"
+          >
+            <div
+              className={`w-full transition-opacity duration-150 ${
+                errors.general ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              {errors.general && (
+                <div className="bg-red-50 border border-red-300 text-red-600 text-sm px-4 py-3 rounded-lg text-center">
+                  {errors.general}
+                </div>
+              )}
             </div>
-          )}
+          </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -80,7 +97,7 @@ const Login = () => {
             <input
               type="text"
               name="email"
-              value={form.email}
+              ref={emailRef}
               onChange={handleChange}
               className={`w-full border rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 errors.email ? "border-red-400 bg-red-50" : "border-gray-300"
@@ -99,7 +116,7 @@ const Login = () => {
             <input
               type="password"
               name="password"
-              value={form.password}
+              ref={passwordRef}
               onChange={handleChange}
               className={`w-full border rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 errors.password ? "border-red-400 bg-red-50" : "border-gray-300"
