@@ -19,6 +19,13 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const original = error.config;
+
+    // Do not attempt refresh/redirect for auth endpoints (login, register, refresh)
+    const authPaths = ['/auth/login', '/auth/register', '/auth/refresh'];
+    if (original?.url && authPaths.some((p) => original.url.includes(p))) {
+      return Promise.reject(error);
+    }
+
     if (error.response?.status === 401 && !original._retry) {
       original._retry = true;
       try {
@@ -36,6 +43,7 @@ api.interceptors.response.use(
         window.location.href = '/login';
       }
     }
+
     return Promise.reject(error);
   }
 );
