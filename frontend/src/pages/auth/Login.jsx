@@ -62,12 +62,26 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="min-h-screen relative bg-gray-50 flex items-center justify-center p-4">
+      <button
+        type="button"
+        onClick={() => navigate("/")}
+        aria-label="Back to landing"
+        className="absolute left-4 top-4 p-2 rounded-full hover:bg-gray-100 text-gray-600 z-10"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M12.707 15.707a1 1 0 01-1.414 0L6.586 11l4.707-4.707a1 1 0 011.414 1.414L9.414 11l3.293 3.293a1 1 0 010 1.414z" clipRule="evenodd" />
+        </svg>
+      </button>
       <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="text-4xl mb-2">🏥</div>
-          <h1 className="text-2xl font-bold text-gray-800">Clinic System</h1>
-          <p className="text-gray-500 mt-1">Sign in to your account</p>
+        <div className="flex items-center justify-center mb-6">
+          <div className="flex items-center gap-3">
+            <div className="text-4xl">🏥</div>
+            <div className="text-lg font-semibold text-gray-800">Clinic System</div>
+          </div>
+        </div>
+        <div className="text-center mb-4">
+          <p className="text-gray-500">Sign in to your account</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">

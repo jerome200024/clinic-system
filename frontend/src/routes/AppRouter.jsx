@@ -29,6 +29,8 @@ import Reports from '../pages/admin/Reports';
 import PatientLayout from '../layouts/PatientLayout';
 import DoctorLayout from '../layouts/DoctorLayout';
 import AdminLayout from '../layouts/AdminLayout';
+// Public landing
+import LandingPage from '../pages/LandingPage';
 
 
 import { useEffect, useState } from 'react';
@@ -64,7 +66,7 @@ const AppRouter = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/" element={<LandingPage />} />
 
         {/* Patient */}
         <Route path="/patient" element={
